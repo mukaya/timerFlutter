@@ -1,18 +1,42 @@
 import 'package:flutter/material.dart';
+import 'dart:async';
 
 class CountDownTimerApp extends StatefulWidget {
   _CountDownTimerAppState createState() => _CountDownTimerAppState();
 }
 
 class _CountDownTimerAppState extends State<CountDownTimerApp> {
-  TextEditingController hourController;
-  TextEditingController minuteController;
+  Timer timer;
+  var minute = 0;
+  var seconds = 0;
+  int totalTime;
 
-  @override
-  void initState() {
-    hourController = TextEditingController(text: '');
-    minuteController = TextEditingController(text: '');
-    super.initState();
+  void startTimer() {
+    final oneSecond = Duration(seconds: 1);
+    timer = Timer.periodic(oneSecond, (timer) {
+      totalTime = minute * 60 + seconds;
+      setState(() {
+        if (totalTime < 1) {
+          timer.cancel();
+        } else {
+          if (seconds == 0) minute -= 1;
+          totalTime -= 1;
+          seconds = (totalTime % 60);
+        }
+      });
+    });
+  }
+
+  void setSeconds(value) {
+    setState(() {
+      seconds = value;
+    });
+  }
+
+  void setMinutes(value) {
+    setState(() {
+      seconds = value;
+    });
   }
 
   @override
@@ -26,8 +50,8 @@ class _CountDownTimerAppState extends State<CountDownTimerApp> {
             ),
             body: Center(
               child: Text(
-                '00:00',
-                style: Theme.of(context).textTheme.headline4,
+                '$minute:$seconds',
+                style: Theme.of(context).textTheme.headline1,
               ),
             ),
             floatingActionButton: FloatingActionButton(
@@ -37,18 +61,37 @@ class _CountDownTimerAppState extends State<CountDownTimerApp> {
                     child: SimpleDialog(
                       contentPadding: EdgeInsets.all(15),
                       children: [
-                        Text(
-                          'Set your time',
-                          style: TextStyle(fontSize: 20),
+                        DropdownButton<int>(
+                          value: minute,
+                          icon: Text('Minute'),
+                          items: List.generate(60, (index) {
+                            return DropdownMenuItem(
+                              value: index,
+                              child: Text(index.toString()),
+                            );
+                          }),
+                          onChanged: setMinutes,
                         ),
-                        TextField(),
-                        TextField(),
+                        DropdownButton<int>(
+                          value: seconds,
+                          icon: Text('Seconds'),
+                          items: List.generate(60, (index) {
+                            return DropdownMenuItem(
+                              value: index,
+                              child: Text(index.toString()),
+                            );
+                          }),
+                          onChanged: setSeconds,
+                        ),
+                        // TextField(),
+                        // TextField(),
                         SizedBox(
                           height: 15,
                         ),
                         OutlineButton(
                             child: Text('Start'),
                             onPressed: () {
+                              startTimer();
                               Navigator.of(context).pop();
                             })
                       ],
