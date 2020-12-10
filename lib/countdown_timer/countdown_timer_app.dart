@@ -1,6 +1,20 @@
 import 'package:flutter/material.dart';
 
-class CountDownTimerApp extends StatelessWidget {
+class CountDownTimerApp extends StatefulWidget {
+  _CountDownTimerAppState createState() => _CountDownTimerAppState();
+}
+
+class _CountDownTimerAppState extends State<CountDownTimerApp> {
+  TextEditingController hourController;
+  TextEditingController minuteController;
+
+  @override
+  void initState() {
+    hourController = TextEditingController(text: '');
+    minuteController = TextEditingController(text: '');
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Theme(
